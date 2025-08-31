@@ -3,6 +3,7 @@ import { Check, Boxes, Store, ShieldCheck, Truck, BarChart3, Headphones, Megapho
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
 function HeroSection() {
   return (
@@ -139,6 +140,90 @@ function FeaturesSection() {
   );
 }
 
+function SubscriptionSection() {
+  const plans = [
+    {
+      name: "Starter",
+      price: "$0/mo",
+      commission: "10% per sale",
+      popular: false,
+      features: [
+        "Unlimited listings",
+        "Standard support",
+        "Basic analytics",
+        "Payouts every 7 days",
+      ],
+      planParam: "starter",
+    },
+    {
+      name: "Pro",
+      price: "$29/mo",
+      commission: "5% per sale",
+      popular: true,
+      features: [
+        "Priority support",
+        "Advanced analytics",
+        "Discount codes & coupons",
+        "Payouts every 3 days",
+      ],
+      planParam: "pro",
+    },
+    {
+      name: "Enterprise",
+      price: "Custom",
+      commission: "2% per sale",
+      popular: false,
+      features: [
+        "Dedicated manager",
+        "Custom SLAs",
+        "API & integrations",
+        "On-demand payouts",
+      ],
+      planParam: "enterprise",
+    },
+  ];
+  return (
+    <section className="container mx-auto px-4 py-16">
+      <div className="flex items-end justify-between mb-6">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-semibold">Plans that fit your business</h2>
+          <p className="text-muted-foreground">Choose a membership. Lower commission with higher tiers.</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {plans.map((p) => (
+          <Card key={p.name} className={p.popular ? "border-primary shadow-md" : ""}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl">{p.name}</CardTitle>
+                {p.popular ? <Badge variant="secondary">Most popular</Badge> : null}
+              </div>
+              <CardDescription>
+                <span className="text-2xl font-semibold">{p.price}</span>
+                <span className="mx-2">•</span>
+                <span className="font-medium text-foreground">{p.commission}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 mb-4">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button className="w-full" asChild>
+                <Link to={`/register?type=seller&plan=${p.planParam}`}>Choose {p.name}</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FAQSection() {
   return (
     <section className="bg-muted/30 py-14">
@@ -202,6 +287,7 @@ export default function BecomeSeller() {
       <HeroSection />
       <StepsSection />
       <FeaturesSection />
+      <SubscriptionSection />
       <FAQSection />
       <CTASection />
     </div>
