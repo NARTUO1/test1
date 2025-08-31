@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice, usdToInr } from "@/lib/currency";
 
 function HeroSection() {
   return (
@@ -141,10 +142,18 @@ function FeaturesSection() {
 }
 
 function SubscriptionSection() {
-  const plans = [
+  const plans: Array<{
+    name: string;
+    priceInr?: number;
+    priceLabel?: string;
+    commission: string;
+    popular: boolean;
+    features: string[];
+    planParam: string;
+  }> = [
     {
       name: "Starter",
-      price: "$0/mo",
+      priceInr: 0,
       commission: "10% per sale",
       popular: false,
       features: [
@@ -157,7 +166,7 @@ function SubscriptionSection() {
     },
     {
       name: "Pro",
-      price: "$29/mo",
+      priceInr: usdToInr(29),
       commission: "5% per sale",
       popular: true,
       features: [
@@ -170,7 +179,7 @@ function SubscriptionSection() {
     },
     {
       name: "Enterprise",
-      price: "Custom",
+      priceLabel: "Custom",
       commission: "2% per sale",
       popular: false,
       features: [
@@ -199,7 +208,9 @@ function SubscriptionSection() {
                 {p.popular ? <Badge variant="secondary">Most popular</Badge> : null}
               </div>
               <CardDescription>
-                <span className="text-2xl font-semibold">{p.price}</span>
+                <span className="text-2xl font-semibold">
+                  {p.priceLabel ? p.priceLabel : `${formatPrice(p.priceInr ?? 0)}/mo`}
+                </span>
                 <span className="mx-2">•</span>
                 <span className="font-medium text-foreground">{p.commission}</span>
               </CardDescription>
