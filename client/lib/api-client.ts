@@ -45,24 +45,55 @@ async function apiRequest<T>(
 ): Promise<ApiResponse<T>> {
   const token = getAuthToken();
 
+  const mergedHeaders: Record<string, string> = {
+    Accept: "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers as Record<string, string>),
+  };
+  // Set JSON content-type only when a body exists and caller didn't set one
+  if (options.body && !("Content-Type" in mergedHeaders)) {
+    mergedHeaders["Content-Type"] = "application/json";
+  }
+
   const config: RequestInit = {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
     ...options,
+    headers: mergedHeaders,
   };
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "API request failed");
+    // Handle empty/204 responses safely
+    const contentType = response.headers.get("content-type") || "";
+    const contentLength = response.headers.get("content-length");
+
+    let parsed: any = {};
+    if (response.status !== 204 && contentType.includes("application/json")) {
+      const text = await response.text();
+      if (text) {
+        try {
+          parsed = JSON.parse(text);
+        } catch (e) {
+          // Fallback when server sends invalid JSON
+          parsed = { success: response.ok, message: text };
+        }
+      } else {
+        parsed = { success: response.ok };
+      }
+    } else if (contentLength === "0" || response.status === 204) {
+      parsed = { success: response.ok };
+    } else {
+      // Non-JSON response, attempt text
+      const text = await response.text().catch(() => "");
+      parsed = { success: response.ok, message: text };
     }
 
-    return data;
+    if (!response.ok) {
+      const message = parsed?.message || parsed?.error || response.statusText || "API request failed";
+      throw new Error(message);
+    }
+
+    return parsed as ApiResponse<T>;
   } catch (error) {
     console.error("API Error:", error);
     throw error;
