@@ -52,6 +52,8 @@ import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
