@@ -46,6 +46,8 @@ import BecomeSeller from "./components/BecomeSeller";
 import SellerLogin from "./components/SellerLogin";
 import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
+import Services from "./pages/Services";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
