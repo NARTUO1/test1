@@ -15,6 +15,8 @@ import Chatbot from "./components/Chatbot";
 import ConditionalFooter from "./components/ConditionalFooter";
 import VendorProductForm from "./pages/VendorProductForm";
 import VendorProfile from "./pages/VendorProfile";
+import VendorAnalytics from "./pages/VendorAnalytics";
+import Support from "./pages/Support";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
