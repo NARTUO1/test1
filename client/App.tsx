@@ -94,9 +94,18 @@ const App = () => (
                         element={<VendorInventory />}
                       />
                       <Route path="/vendor/orders" element={<VendorOrders />} />
-                      <Route path="/vendor/reviews" element={<VendorReviews />} />
-                      <Route path="/vendor/customers" element={<VendorCustomers />} />
-                      <Route path="/vendor/settings" element={<VendorSettings />} />
+                      <Route
+                        path="/vendor/reviews"
+                        element={<VendorReviews />}
+                      />
+                      <Route
+                        path="/vendor/customers"
+                        element={<VendorCustomers />}
+                      />
+                      <Route
+                        path="/vendor/settings"
+                        element={<VendorSettings />}
+                      />
                       <Route path="/orders" element={<OrderTracking />} />
                       <Route path="/track-order" element={<OrderTracking />} />
                       <Route path="/wishlist" element={<Wishlist />} />

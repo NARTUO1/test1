@@ -2,15 +2,38 @@ import { useState } from "react";
 import { VendorLayout } from "@/components/VendorLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function VendorCustomers() {
   const [q, setQ] = useState("");
   const customers = [
-    { id: "CUS-001", name: "Rohan Sharma", email: "rohan@example.com", orders: 5, totalSpent: 32499 },
-    { id: "CUS-002", name: "Priya Verma", email: "priya@example.com", orders: 2, totalSpent: 4999 },
+    {
+      id: "CUS-001",
+      name: "Rohan Sharma",
+      email: "rohan@example.com",
+      orders: 5,
+      totalSpent: 32499,
+    },
+    {
+      id: "CUS-002",
+      name: "Priya Verma",
+      email: "priya@example.com",
+      orders: 2,
+      totalSpent: 4999,
+    },
   ];
-  const filtered = customers.filter((c) => c.name.toLowerCase().includes(q.toLowerCase()) || c.email.toLowerCase().includes(q.toLowerCase()));
+  const filtered = customers.filter(
+    (c) =>
+      c.name.toLowerCase().includes(q.toLowerCase()) ||
+      c.email.toLowerCase().includes(q.toLowerCase()),
+  );
 
   return (
     <VendorLayout activeTab="customers">
@@ -18,13 +41,22 @@ export default function VendorCustomers() {
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-3xl font-bold">Customers</h1>
-            <p className="text-muted-foreground">Your buyers and their lifetime value.</p>
+            <p className="text-muted-foreground">
+              Your buyers and their lifetime value.
+            </p>
           </div>
-          <Input placeholder="Search customers..." value={q} onChange={(e) => setQ(e.target.value)} className="max-w-xs" />
+          <Input
+            placeholder="Search customers..."
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="max-w-xs"
+          />
         </div>
 
         <Card>
-          <CardHeader><CardTitle>Customer List</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Customer List</CardTitle>
+          </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
@@ -43,7 +75,9 @@ export default function VendorCustomers() {
                     <TableCell>{c.name}</TableCell>
                     <TableCell>{c.email}</TableCell>
                     <TableCell>{c.orders}</TableCell>
-                    <TableCell className="text-right">{c.totalSpent.toLocaleString("en-IN")}</TableCell>
+                    <TableCell className="text-right">
+                      {c.totalSpent.toLocaleString("en-IN")}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
