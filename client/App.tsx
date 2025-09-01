@@ -153,6 +153,7 @@ const App = () => (
                         path="/vendor/profile"
                         element={<VendorProfile />}
                       />
+                      <Route path="/vendor/analytics" element={<VendorAnalytics />} />
                       <Route
                         path="/deals"
                         element={
@@ -167,6 +168,8 @@ const App = () => (
                       />
                       <Route path="/become-seller" element={<BecomeSeller />} />
                       <Route path="/seller-login" element={<SellerLogin />} />
+                      <Route path="/support" element={<Support />} />
+                      <Route path="/order-tracking" element={<OrderTracking />} />
                       <Route
                         path="/payment-success"
                         element={<PaymentSuccess />}
