@@ -125,7 +125,31 @@ export class DatabaseService {
     taxId?: string;
     bankAccount?: string;
   }) {
-    return await this.jsonStore.createVendor(vendorData as any);
+    // Create vendor in JSON store (authoritative vendor data)
+    const vendorId = await this.jsonStore.createVendor(vendorData as any);
+
+    // Also ensure a corresponding row exists in the SQLite vendors table so JOINs continue to work
+    const db = await this.getDb();
+    try {
+      await db.run(
+        `INSERT OR REPLACE INTO vendors (id, user_id, business_name, business_description, business_address, tax_id, bank_account, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        [
+          vendorId,
+          vendorData.userId,
+          vendorData.businessName,
+          vendorData.businessDescription || null,
+          vendorData.businessAddress || null,
+          vendorData.taxId || null,
+          vendorData.bankAccount || null,
+        ],
+      );
+    } catch (e) {
+      // If sqlite insert fails, log but do not break (JSON store is authoritative)
+      console.error('Failed to insert vendor into sqlite vendors table:', e);
+    }
+
+    return vendorId;
   }
 
   async getVendorByUserId(userId: number) {
