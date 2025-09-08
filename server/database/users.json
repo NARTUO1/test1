@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@marketplace.com",
+      "password_hash": "$2b$10$poVnIZhowFa7W.71NddoEe5EWOC1LT5.WbuahDYboqTgikiAVwvlC",
+      "full_name": "System Administrator",
+      "role": "admin",
+      "is_active": 1,
+      "created_at": "2025-09-08T04:53:02.925Z"
+    }
+  ]
+}
