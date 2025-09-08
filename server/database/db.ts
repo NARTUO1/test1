@@ -3,6 +3,7 @@ import { open, Database } from "sqlite";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import { JSONStore } from "./jsonStore";
 
 // Enable verbose mode for debugging
 const sqlite = sqlite3.verbose();
@@ -36,20 +37,12 @@ export async function initializeDatabase(): Promise<Database> {
     const schema = fs.readFileSync(schemaPath, "utf8");
     await db.exec(schema);
 
-    // Create default admin user with proper password hash
-    const adminPassword = "admin123"; // Default admin password
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
-
-    await db.run(
-      `
-      INSERT OR REPLACE INTO users (id, username, email, password_hash, full_name, role, is_active) 
-      VALUES (1, 'admin', 'admin@marketplace.com', ?, 'System Administrator', 'admin', 1)
-    `,
-      [hashedPassword],
-    );
+    // Seed admin user into JSON store (users are now stored as JSON)
+    const jsonStore = JSONStore.getInstance();
+    await jsonStore.initAdminIfMissing();
 
     console.log("✅ Database initialized successfully");
-    console.log("📋 Default admin credentials:");
+    console.log("📋 Default admin credentials (if newly created):");
     console.log("   Username: admin");
     console.log("   Password: admin123");
     console.log("   Email: admin@marketplace.com");
@@ -79,6 +72,7 @@ export async function closeDatabase(): Promise<void> {
 export class DatabaseService {
   private static instance: DatabaseService;
   private db: Database | null = null;
+  private jsonStore = JSONStore.getInstance();
 
   static getInstance(): DatabaseService {
     if (!DatabaseService.instance) {
@@ -94,7 +88,7 @@ export class DatabaseService {
     return this.db;
   }
 
-  // User operations
+  // User operations (migrated to JSON store)
   async createUser(userData: {
     username: string;
     email: string;
@@ -104,51 +98,25 @@ export class DatabaseService {
     address?: string;
     role?: "customer" | "vendor" | "admin";
   }) {
-    const db = await this.getDb();
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-    const result = await db.run(
-      `
-      INSERT INTO users (username, email, password_hash, full_name, phone, address, role)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
-      [
-        userData.username,
-        userData.email,
-        hashedPassword,
-        userData.fullName || null,
-        userData.phone || null,
-        userData.address || null,
-        userData.role || "customer",
-      ],
-    );
-
-    return result.lastID;
+    return await this.jsonStore.createUser(userData as any);
   }
 
   async getUserByEmail(email: string) {
-    const db = await this.getDb();
-    return await db.get(
-      "SELECT * FROM users WHERE email = ? AND is_active = 1",
-      [email],
-    );
+    return await this.jsonStore.getUserByEmail(email);
   }
 
   async getUserById(id: number) {
-    const db = await this.getDb();
-    return await db.get("SELECT * FROM users WHERE id = ? AND is_active = 1", [
-      id,
-    ]);
+    return await this.jsonStore.getUserById(id);
   }
 
   async verifyPassword(
     password: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    return await bcrypt.compare(password, hashedPassword);
+    return await this.jsonStore.verifyPassword(password, hashedPassword);
   }
 
-  // Vendor operations
+  // Vendor operations (migrated to JSON store)
   async createVendor(vendorData: {
     userId: number;
     businessName: string;
@@ -157,39 +125,14 @@ export class DatabaseService {
     taxId?: string;
     bankAccount?: string;
   }) {
-    const db = await this.getDb();
-    const result = await db.run(
-      `
-      INSERT INTO vendors (user_id, business_name, business_description, business_address, tax_id, bank_account)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `,
-      [
-        vendorData.userId,
-        vendorData.businessName,
-        vendorData.businessDescription || null,
-        vendorData.businessAddress || null,
-        vendorData.taxId || null,
-        vendorData.bankAccount || null,
-      ],
-    );
-
-    return result.lastID;
+    return await this.jsonStore.createVendor(vendorData as any);
   }
 
   async getVendorByUserId(userId: number) {
-    const db = await this.getDb();
-    return await db.get(
-      `
-      SELECT v.*, u.username, u.email, u.full_name 
-      FROM vendors v 
-      JOIN users u ON v.user_id = u.id 
-      WHERE v.user_id = ?
-    `,
-      [userId],
-    );
+    return await this.jsonStore.getVendorByUserId(userId);
   }
 
-  // Product operations
+  // Product operations (remain in SQLite)
   async createProduct(productData: {
     vendorId: number;
     categoryId: number;
