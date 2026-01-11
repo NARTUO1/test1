@@ -40,6 +40,9 @@ export async function initializeDatabase(): Promise<Database> {
     // Initialize admin user in SQLite (if not exists)
     await initializeAdminUser(db);
 
+    // Seed database with initial data
+    await seedDatabase(db);
+
     console.log("✅ Database initialized successfully");
     console.log("📋 Default admin credentials (if newly created):");
     console.log("   Username: admin");
