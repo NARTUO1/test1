@@ -49,6 +49,9 @@ export const registerUser: RequestHandler = async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN },
     );
 
+    // Send welcome email
+    await sendWelcomeEmail(email, fullName || username);
+
     res.status(201).json({
       success: true,
       message: "User registered successfully",
