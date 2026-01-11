@@ -2,7 +2,16 @@ import { RequestHandler } from "express";
 import Stripe from "stripe";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY || "";
-const stripe = new Stripe(stripeSecret, { apiVersion: "2024-11-20.acacia" });
+
+// Lazy initialize Stripe - only create instance when API key is available
+let stripeInstance: Stripe | null = null;
+
+function getStripeInstance(): Stripe {
+  if (!stripeInstance && stripeSecret) {
+    stripeInstance = new Stripe(stripeSecret, { apiVersion: "2024-11-20.acacia" });
+  }
+  return stripeInstance as Stripe;
+}
 
 export const createPaymentIntent: RequestHandler = async (req, res) => {
   try {
