@@ -65,6 +65,13 @@ import {
   exportData,
 } from "./routes/admin";
 
+import {
+  createPaymentIntent,
+  confirmPayment,
+  handleWebhook,
+  getPublishableKey,
+} from "./routes/payments";
+
 export function createServer() {
   const app = express();
 
