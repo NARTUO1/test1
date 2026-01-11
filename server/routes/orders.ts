@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { DatabaseService } from "../database/db";
+import { sendOrderConfirmation } from "../services/email";
 
 const dbService = DatabaseService.getInstance();
 
