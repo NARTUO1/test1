@@ -3,6 +3,7 @@ import { open, Database } from "sqlite";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import { seedDatabase } from "./seed";
 
 // Enable verbose mode for debugging
 const sqlite = sqlite3.verbose();
