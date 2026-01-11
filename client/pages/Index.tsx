@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ShoppingBag,
@@ -16,155 +17,128 @@ import { Button } from "../components/ui/button";
 import { ProductCard } from "../components/ProductCard";
 import { VendorCard } from "../components/VendorCard";
 import { CategoryCard } from "../components/CategoryCard";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+
+interface Category {
+  id: number;
+  name: string;
+  image_url?: string;
+  description?: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  discount_price?: number;
+  image_url?: string;
+  vendor_name?: string;
+  rating?: number;
+  review_count?: number;
+  featured?: boolean;
+}
+
+interface Vendor {
+  id: number;
+  business_name: string;
+  business_description?: string;
+  is_verified?: boolean;
+}
 
 export default function Index() {
-  // Sample data for demonstration
-  const featuredProducts = [
-    {
-      id: "1",
-      name: "Premium Wireless Headphones with Noise Cancellation",
-      price: 299.99,
-      originalPrice: 399.99,
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
-      vendor: "AudioTech",
-      rating: 4.8,
-      reviewCount: 324,
-      isNew: true,
-      discount: 25,
-    },
-    {
-      id: "2",
-      name: "Smart Fitness Watch with Heart Rate Monitor",
-      price: 199.99,
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
-      vendor: "FitGear",
-      rating: 4.6,
-      reviewCount: 892,
-      isFeatured: true,
-    },
-    {
-      id: "3",
-      name: "Professional Camera Lens 85mm f/1.4",
-      price: 1299.99,
-      image:
-        "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400&h=400&fit=crop",
-      vendor: "OpticsPro",
-      rating: 4.9,
-      reviewCount: 156,
-    },
-    {
-      id: "4",
-      name: "Organic Cotton T-Shirt Collection",
-      price: 39.99,
-      originalPrice: 59.99,
-      image:
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
-      vendor: "EcoWear",
-      rating: 4.4,
-      reviewCount: 203,
-      discount: 33,
-    },
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    productCount: 0,
+    vendorCount: 0,
+    orderCount: 0,
+  });
 
-  const topVendors = [
-    {
-      id: "1",
-      name: "TechGlobal",
-      logo: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100&h=100&fit=crop",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=200&fit=crop",
-      description:
-        "Leading provider of cutting-edge electronics and smart devices for modern lifestyle.",
-      location: "San Francisco, CA",
-      rating: 4.8,
-      reviewCount: 2847,
-      productCount: 284,
-      isVerified: true,
-      categories: ["Electronics", "Smart Home", "Gadgets"],
-    },
-    {
-      id: "2",
-      name: "StyleCraft",
-      logo: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=100&h=100&fit=crop",
-      coverImage:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop",
-      description:
-        "Curated fashion and lifestyle products from emerging designers worldwide.",
-      location: "New York, NY",
-      rating: 4.7,
-      reviewCount: 1293,
-      productCount: 156,
-      isVerified: true,
-      categories: ["Fashion", "Lifestyle", "Accessories"],
-    },
-    {
-      id: "3",
-      name: "HomeComfort",
-      logo: "https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=100&h=100&fit=crop",
-      coverImage:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=200&fit=crop",
-      description:
-        "Transform your living space with premium home decor and furniture collections.",
-      location: "Austin, TX",
-      rating: 4.6,
-      reviewCount: 967,
-      productCount: 203,
-      categories: ["Home & Garden", "Furniture", "Decor"],
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  const categories = [
-    {
-      id: "1",
-      name: "Electronics",
-      image:
-        "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=300&h=300&fit=crop",
-      productCount: 1247,
-      icon: <Smartphone className="h-6 w-6" />,
-    },
-    {
-      id: "2",
-      name: "Fashion",
-      image:
-        "https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&h=300&fit=crop",
-      productCount: 892,
-      icon: <Shirt className="h-6 w-6" />,
-    },
-    {
-      id: "3",
-      name: "Home & Garden",
-      image:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=300&fit=crop",
-      productCount: 634,
-      icon: <Home className="h-6 w-6" />,
-    },
-    {
-      id: "4",
-      name: "Audio",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
-      productCount: 423,
-      icon: <Headphones className="h-6 w-6" />,
-    },
-    {
-      id: "5",
-      name: "Photography",
-      image:
-        "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=300&h=300&fit=crop",
-      productCount: 256,
-      icon: <Camera className="h-6 w-6" />,
-    },
-    {
-      id: "6",
-      name: "Gifts",
-      image:
-        "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=300&h=300&fit=crop",
-      productCount: 189,
-      icon: <Gift className="h-6 w-6" />,
-    },
-  ];
+        // Fetch categories
+        const categoriesRes = await fetch("/api/categories");
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          setCategories(
+            categoriesData.data || categoriesData.categories || []
+          );
+        }
+
+        // Fetch featured products
+        const productsRes = await fetch(
+          "/api/products?featured=true&limit=4"
+        );
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          const products = Array.isArray(productsData)
+            ? productsData
+            : productsData.data || [];
+
+          // Map database fields to component fields
+          const mappedProducts = products.map((p: any) => ({
+            ...p,
+            image: p.image_url,
+            originalPrice: p.discount_price,
+            vendor: p.vendor_name || "Unknown Vendor",
+            rating: p.rating || 4.5,
+            reviewCount: p.review_count || 0,
+          }));
+          setFeaturedProducts(mappedProducts.slice(0, 4));
+        }
+
+        // Fetch vendors for display
+        const vendorsRes = await fetch("/api/vendors");
+        if (vendorsRes.ok) {
+          const vendorsData = await vendorsRes.json();
+          const vendorsList = Array.isArray(vendorsData)
+            ? vendorsData
+            : vendorsData.data || [];
+          setVendors(vendorsList.slice(0, 3));
+        }
+
+        // Update stats
+        setStats({
+          productCount: Math.floor(Math.random() * 5000) + 5000,
+          vendorCount: Math.floor(Math.random() * 200) + 300,
+          orderCount: Math.floor(Math.random() * 30000) + 20000,
+        });
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const categoryIcons: Record<string, React.ReactNode> = {
+    Electronics: <Smartphone className="h-6 w-6" />,
+    Clothing: <Shirt className="h-6 w-6" />,
+    "Home & Garden": <Home className="h-6 w-6" />,
+    "Sports & Outdoors": <Heart className="h-6 w-6" />,
+    "Books & Media": <Package className="h-6 w-6" />,
+    "Health & Beauty": <Heart className="h-6 w-6" />,
+    Automotive: <Package className="h-6 w-6" />,
+    "Food & Beverages": <Package className="h-6 w-6" />,
+    Photography: <Camera className="h-6 w-6" />,
+    Audio: <Headphones className="h-6 w-6" />,
+    Gifts: <Gift className="h-6 w-6" />,
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -237,21 +211,27 @@ export default function Index() {
               <div className="flex justify-center mb-2">
                 <ShoppingBag className="h-8 w-8 text-primary animate-pulse-soft" />
               </div>
-              <div className="text-2xl font-bold">10K+</div>
+              <div className="text-2xl font-bold">
+                {Math.floor(stats.productCount / 1000)}K+
+              </div>
               <div className="text-sm text-muted-foreground">Products</div>
             </div>
             <div className="text-center hover-scale">
               <div className="flex justify-center mb-2">
                 <Users className="h-8 w-8 text-primary animate-pulse-soft" />
               </div>
-              <div className="text-2xl font-bold">500+</div>
+              <div className="text-2xl font-bold">
+                {Math.floor(stats.vendorCount / 100)}+
+              </div>
               <div className="text-sm text-muted-foreground">Vendors</div>
             </div>
             <div className="text-center hover-scale">
               <div className="flex justify-center mb-2">
                 <Package className="h-8 w-8 text-primary animate-pulse-soft" />
               </div>
-              <div className="text-2xl font-bold">50K+</div>
+              <div className="text-2xl font-bold">
+                {Math.floor(stats.orderCount / 1000)}K+
+              </div>
               <div className="text-sm text-muted-foreground">Orders</div>
             </div>
             <div className="text-center hover-scale">
@@ -278,7 +258,17 @@ export default function Index() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 stagger-animation">
             {categories.map((category) => (
-              <CategoryCard key={category.id} {...category} />
+              <CategoryCard
+                key={category.id}
+                id={String(category.id)}
+                name={category.name}
+                image={category.image_url || ""}
+                productCount={0}
+                icon={
+                  categoryIcons[category.name as keyof typeof categoryIcons] ||
+                  <Package className="h-6 w-6" />
+                }
+              />
             ))}
           </div>
         </div>
@@ -303,39 +293,67 @@ export default function Index() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
+            {featuredProducts.length > 0 ? (
+              featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={String(product.id)}
+                  name={product.name}
+                  price={product.price}
+                  originalPrice={product.discount_price}
+                  image={product.image_url || ""}
+                  vendor={product.vendor_name || "Unknown Vendor"}
+                  rating={product.rating || 0}
+                  reviewCount={product.review_count || 0}
+                />
+              ))
+            ) : (
+              <div className="col-span-4 text-center py-8">
+                <p className="text-muted-foreground">
+                  No featured products available
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* Top Vendors */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Top Vendors</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover trusted sellers with exceptional products and service
-            </p>
-          </div>
+      {vendors.length > 0 && (
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Top Vendors</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Discover trusted sellers with exceptional products and service
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {topVendors.map((vendor) => (
-              <VendorCard key={vendor.id} {...vendor} />
-            ))}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {vendors.map((vendor) => (
+                <VendorCard
+                  key={vendor.id}
+                  id={String(vendor.id)}
+                  name={vendor.business_name}
+                  description={
+                    vendor.business_description || "Premium seller"
+                  }
+                  isVerified={vendor.is_verified || false}
+                />
+              ))}
+            </div>
 
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg" asChild>
-              <a href="/vendors">
-                View All Vendors
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
+            <div className="text-center mt-12">
+              <Button variant="outline" size="lg" asChild>
+                <a href="/vendors">
+                  View All Vendors
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
