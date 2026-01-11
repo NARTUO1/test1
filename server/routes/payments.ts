@@ -107,6 +107,7 @@ export const handleWebhook: RequestHandler = async (req, res) => {
       });
     }
 
+    const stripe = getStripeInstance();
     const event = stripe.webhooks.constructEvent(
       req.body,
       signature,
