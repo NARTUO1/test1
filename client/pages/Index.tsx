@@ -65,15 +65,11 @@ export default function Index() {
         const categoriesRes = await fetch("/api/categories");
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
-          setCategories(
-            categoriesData.data || categoriesData.categories || []
-          );
+          setCategories(categoriesData.data || categoriesData.categories || []);
         }
 
         // Fetch featured products
-        const productsRes = await fetch(
-          "/api/products?featured=true&limit=4"
-        );
+        const productsRes = await fetch("/api/products?featured=true&limit=4");
         if (productsRes.ok) {
           const productsData = await productsRes.json();
           const products = Array.isArray(productsData)
@@ -265,8 +261,9 @@ export default function Index() {
                 image={category.image_url || ""}
                 productCount={0}
                 icon={
-                  categoryIcons[category.name as keyof typeof categoryIcons] ||
-                  <Package className="h-6 w-6" />
+                  categoryIcons[
+                    category.name as keyof typeof categoryIcons
+                  ] || <Package className="h-6 w-6" />
                 }
               />
             ))}
@@ -335,9 +332,7 @@ export default function Index() {
                   key={vendor.id}
                   id={String(vendor.id)}
                   name={vendor.business_name}
-                  description={
-                    vendor.business_description || "Premium seller"
-                  }
+                  description={vendor.business_description || "Premium seller"}
                   isVerified={vendor.is_verified || false}
                 />
               ))}

@@ -75,7 +75,7 @@ export async function sendOrderConfirmation(
   email: string,
   orderNumber: string,
   items: Array<{ name: string; price: number; quantity: number }>,
-  totalAmount: number
+  totalAmount: number,
 ): Promise<boolean> {
   const itemsHtml = items
     .map(
@@ -88,7 +88,7 @@ export async function sendOrderConfirmation(
         $${(item.price * item.quantity).toFixed(2)}
       </td>
     </tr>
-  `
+  `,
     )
     .join("");
 
@@ -132,7 +132,7 @@ export async function sendOrderConfirmation(
 
 export async function sendPasswordResetEmail(
   email: string,
-  resetLink: string
+  resetLink: string,
 ): Promise<boolean> {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -162,7 +162,7 @@ export async function sendPasswordResetEmail(
 
 export async function sendVendorVerificationEmail(
   email: string,
-  vendorName: string
+  vendorName: string,
 ): Promise<boolean> {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -192,7 +192,7 @@ export async function sendVendorVerificationEmail(
 
 export async function sendWelcomeEmail(
   email: string,
-  name: string
+  name: string,
 ): Promise<boolean> {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

@@ -7,7 +7,7 @@ export async function seedDatabase(db: Database) {
 
     // Check if data already exists
     const categoryCount = await db.get(
-      "SELECT COUNT(*) as count FROM categories"
+      "SELECT COUNT(*) as count FROM categories",
     );
     const productCount = await db.get("SELECT COUNT(*) as count FROM products");
 
@@ -25,7 +25,7 @@ export async function seedDatabase(db: Database) {
     let vendorId = 1;
     const vendorExists = await db.get(
       "SELECT id FROM vendors WHERE business_name = ?",
-      ["MarketHub Official Store"]
+      ["MarketHub Official Store"],
     );
 
     if (!vendorExists) {
@@ -39,8 +39,8 @@ export async function seedDatabase(db: Database) {
           "vendor@markethub.com",
           hashedPassword,
           "MarketHub Official",
-          "vendor"
-        ]
+          "vendor",
+        ],
       );
       const userId = userResult.lastID;
 
@@ -51,8 +51,8 @@ export async function seedDatabase(db: Database) {
         [
           userId,
           "MarketHub Official Store",
-          "Premium curated products from trusted brands worldwide"
-        ]
+          "Premium curated products from trusted brands worldwide",
+        ],
       );
       vendorId = vendorResult.lastID;
     } else {
@@ -117,7 +117,8 @@ export async function seedDatabase(db: Database) {
         name: "Designer Leather Jacket",
         category: "Clothing",
         price: 20749,
-        description: "Premium quality leather jacket for style-conscious customers",
+        description:
+          "Premium quality leather jacket for style-conscious customers",
         image:
           "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=400&fit=crop",
         stock: 40,
@@ -286,7 +287,7 @@ export async function seedDatabase(db: Database) {
 
       const existingProduct = await db.get(
         "SELECT id FROM products WHERE name = ? AND vendor_id = ?",
-        [product.name, vendorId]
+        [product.name, vendorId],
       );
 
       if (!existingProduct) {
@@ -303,7 +304,7 @@ export async function seedDatabase(db: Database) {
             product.stock || 50,
             product.image,
             product.featured ? 1 : 0,
-          ]
+          ],
         );
       }
     }

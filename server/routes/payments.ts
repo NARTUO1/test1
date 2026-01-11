@@ -8,7 +8,9 @@ let stripeInstance: Stripe | null = null;
 
 function getStripeInstance(): Stripe {
   if (!stripeInstance && stripeSecret) {
-    stripeInstance = new Stripe(stripeSecret, { apiVersion: "2024-11-20.acacia" });
+    stripeInstance = new Stripe(stripeSecret, {
+      apiVersion: "2024-11-20.acacia",
+    });
   }
   return stripeInstance as Stripe;
 }
@@ -70,9 +72,7 @@ export const confirmPayment: RequestHandler = async (req, res) => {
     }
 
     const stripe = getStripeInstance();
-    const paymentIntent = await stripe.paymentIntents.retrieve(
-      paymentIntentId
-    );
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     res.json({
       success: paymentIntent.status === "succeeded",
@@ -111,7 +111,7 @@ export const handleWebhook: RequestHandler = async (req, res) => {
     const event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      webhookSecret
+      webhookSecret,
     );
 
     switch (event.type) {

@@ -60,7 +60,7 @@ async function initializeAdminUser(database: Database) {
   try {
     const existingAdmin = await database.get(
       "SELECT id FROM users WHERE email = ?",
-      ["admin@marketplace.com"]
+      ["admin@marketplace.com"],
     );
 
     if (!existingAdmin) {
@@ -68,7 +68,14 @@ async function initializeAdminUser(database: Database) {
       await database.run(
         `INSERT INTO users (username, email, password_hash, full_name, role, is_active)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        ["admin", "admin@marketplace.com", hashedPassword, "System Administrator", "admin", 1]
+        [
+          "admin",
+          "admin@marketplace.com",
+          hashedPassword,
+          "System Administrator",
+          "admin",
+          1,
+        ],
       );
       console.log("✅ Admin user created");
     }
@@ -132,8 +139,8 @@ export class DatabaseService {
         userData.fullName || null,
         userData.phone || null,
         userData.address || null,
-        userData.role || "customer"
-      ]
+        userData.role || "customer",
+      ],
     );
     return result.lastID;
   }
@@ -142,16 +149,15 @@ export class DatabaseService {
     const db = await this.getDb();
     return await db.get(
       "SELECT * FROM users WHERE email = ? AND is_active = 1",
-      [email]
+      [email],
     );
   }
 
   async getUserById(id: number) {
     const db = await this.getDb();
-    return await db.get(
-      "SELECT * FROM users WHERE id = ? AND is_active = 1",
-      [id]
-    );
+    return await db.get("SELECT * FROM users WHERE id = ? AND is_active = 1", [
+      id,
+    ]);
   }
 
   async verifyPassword(
@@ -181,7 +187,7 @@ export class DatabaseService {
         vendorData.businessAddress || null,
         vendorData.taxId || null,
         vendorData.bankAccount || null,
-      ]
+      ],
     );
     return result.lastID;
   }
@@ -193,7 +199,7 @@ export class DatabaseService {
        FROM vendors v
        JOIN users u ON v.user_id = u.id
        WHERE v.user_id = ?`,
-      [userId]
+      [userId],
     );
   }
 
@@ -204,7 +210,7 @@ export class DatabaseService {
        FROM vendors v
        JOIN users u ON v.user_id = u.id
        WHERE v.id = ?`,
-      [vendorId]
+      [vendorId],
     );
   }
 

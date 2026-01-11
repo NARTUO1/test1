@@ -102,9 +102,16 @@ export const createOrder: RequestHandler = async (req, res) => {
     });
 
     // Send order confirmation email
-    const customerEmail = guestInfo?.email || (userId ? (await dbService.getUserById(userId))?.email : undefined);
+    const customerEmail =
+      guestInfo?.email ||
+      (userId ? (await dbService.getUserById(userId))?.email : undefined);
     if (customerEmail) {
-      await sendOrderConfirmation(customerEmail, orderNumber, items, totalAmount);
+      await sendOrderConfirmation(
+        customerEmail,
+        orderNumber,
+        items,
+        totalAmount,
+      );
     }
 
     res.status(201).json({

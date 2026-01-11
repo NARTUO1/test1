@@ -108,7 +108,11 @@ export function createServer() {
   app.use(cors());
 
   // Stripe webhook needs raw body, so handle it before JSON parsing
-  app.post("/api/webhooks/stripe", express.raw({type: "application/json"}), handleWebhook);
+  app.post(
+    "/api/webhooks/stripe",
+    express.raw({ type: "application/json" }),
+    handleWebhook,
+  );
 
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));

@@ -5,16 +5,19 @@ Your marketplace has been fully converted to production-ready! Here's how to get
 ## ⚡ 5-Minute Setup
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Create Environment File
+
 ```bash
 cp .env.example .env
 ```
 
 ### 3. Start Development Server
+
 ```bash
 npm run dev
 ```
@@ -24,30 +27,35 @@ Visit **http://localhost:8080** - your marketplace is live!
 ## 📱 What Works Now
 
 ### 🛍️ Shopping
+
 - Browse 20+ seeded products across multiple categories
 - View product details with images
 - Add/remove from cart
 - Manage wishlist
 
 ### 💳 Checkout & Payment
+
 - Complete checkout flow
 - **Real Stripe payment processing** (test mode)
 - Order confirmation emails
 - Guest checkout support
 
 ### 👤 User Accounts
+
 - User registration & login
 - Secure JWT authentication
 - User profile management
 - Order history
 
 ### 🏪 Vendor Features
+
 - Vendor registration
 - Product management
 - Order tracking
 - Vendor dashboard
 
 ### 📧 Email Notifications
+
 - Welcome email on signup
 - Order confirmation with details
 - Password reset emails
@@ -56,12 +64,14 @@ Visit **http://localhost:8080** - your marketplace is live!
 ## 🧪 Test the System
 
 ### Default Admin Account
+
 ```
 Email: admin@marketplace.com
 Password: admin123
 ```
 
 ### Test Stripe Payment
+
 1. Go to checkout
 2. Use test card: `4242 4242 4242 4242`
 3. Use any future date (e.g., `12/25`)
@@ -69,7 +79,8 @@ Password: admin123
 5. Payment will succeed
 
 ### Create Test User
-1. Click "Register" 
+
+1. Click "Register"
 2. Create account
 3. Browse products
 4. Add to cart → Checkout
@@ -95,18 +106,19 @@ shared/
 
 ## 🔐 Key Features Added
 
-| Feature | Status | Details |
-|---------|--------|---------|
-| **Database** | ✅ | SQLite with 20+ seeded products |
-| **Payment** | ✅ | Real Stripe integration (test mode) |
-| **Email** | ✅ | SMTP + welcome/order/reset emails |
-| **Security** | ✅ | Helmet, rate limiting, JWT, bcrypt |
-| **File Upload** | ✅ | Product images & avatars (5MB limit) |
-| **API** | ✅ | Fully REST API with proper validation |
+| Feature         | Status | Details                               |
+| --------------- | ------ | ------------------------------------- |
+| **Database**    | ✅     | SQLite with 20+ seeded products       |
+| **Payment**     | ✅     | Real Stripe integration (test mode)   |
+| **Email**       | ✅     | SMTP + welcome/order/reset emails     |
+| **Security**    | ✅     | Helmet, rate limiting, JWT, bcrypt    |
+| **File Upload** | ✅     | Product images & avatars (5MB limit)  |
+| **API**         | ✅     | Fully REST API with proper validation |
 
 ## 🔧 Environment Setup
 
 For development (already has sensible defaults):
+
 ```bash
 JWT_SECRET=dev-secret-change-in-production
 STRIPE_SECRET_KEY=sk_test_<your_stripe_test_key>
@@ -118,18 +130,21 @@ For production, see `DEPLOYMENT.md` for full configuration.
 ## 🚀 Ready to Deploy?
 
 ### Option 1: Netlify (Easiest)
+
 ```bash
 npm run build
 netlify deploy --prod
 ```
 
 ### Option 2: Vercel
+
 ```bash
 npm run build
 vercel --prod
 ```
 
 ### Option 3: Railway (All-in-one)
+
 - Connect GitHub → Railway auto-deploys
 - Add PostgreSQL from Railway plugins
 
@@ -138,6 +153,7 @@ vercel --prod
 ## 📊 Database Info
 
 ### Auto-Seeded Data
+
 - ✅ 8 product categories
 - ✅ 20+ products with images & descriptions
 - ✅ 1 admin user (admin@marketplace.com / admin123)
@@ -145,6 +161,7 @@ vercel --prod
 - ✅ Default settings
 
 ### Key Tables
+
 - `users` - Customers, vendors, admins
 - `products` - Product catalog
 - `orders` - Customer orders
@@ -154,6 +171,7 @@ vercel --prod
 ## 🧐 Check What Works
 
 ### Test Features
+
 ```
 ✅ Browse products
 ✅ Search by category
@@ -172,6 +190,7 @@ vercel --prod
 ## 📧 Email Setup (Optional)
 
 ### For Gmail:
+
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_USER=your-email@gmail.com
@@ -179,6 +198,7 @@ SMTP_PASSWORD=your-app-password
 ```
 
 ### For SendGrid:
+
 ```
 SMTP_HOST=smtp.sendgrid.net
 SMTP_USER=apikey
@@ -186,23 +206,27 @@ SMTP_PASSWORD=your-sendgrid-api-key
 ```
 
 ### For Development:
+
 Default setup uses Ethereal (test email service) - emails shown in console logs.
 
 ## 🔍 Debugging
 
 ### View Database
+
 ```bash
 sqlite3 server/database/marketplace.db
 sqlite> SELECT * FROM products LIMIT 5;
 ```
 
 ### Check Seeded Data
+
 ```bash
 npm run dev
 # Check logs for "✅ Database seeded successfully"
 ```
 
 ### Enable Debug Logs
+
 ```bash
 DEBUG=* npm run dev
 ```
@@ -210,6 +234,7 @@ DEBUG=* npm run dev
 ## 📦 What's Installed
 
 ### Backend
+
 - `express` - Web framework
 - `sqlite` + `sqlite3` - Database
 - `stripe` - Payment processing
@@ -221,6 +246,7 @@ DEBUG=* npm run dev
 - `jsonwebtoken` - JWT auth
 
 ### Frontend
+
 - `react` - UI framework
 - `react-router-dom` - Routing
 - `@stripe/react-stripe-js` - Stripe UI
@@ -248,6 +274,7 @@ Before deploying to production:
 ## 🆘 Troubleshooting
 
 ### Dev server not starting?
+
 ```bash
 # Clear cache and reinstall
 rm -rf node_modules package-lock.json
@@ -256,16 +283,19 @@ npm run dev
 ```
 
 ### Payment not working?
+
 - Check Stripe keys in `.env`
 - Use test card: `4242 4242 4242 4242`
 - Check browser console for errors
 
 ### Emails not sending?
+
 - For development: Check console logs
 - For production: Verify SMTP credentials
 - Check email spam folder
 
 ### Database issues?
+
 ```bash
 # Reset database
 rm server/database/marketplace.db*
@@ -291,6 +321,7 @@ npm run dev
 ## 🎉 You're All Set!
 
 Your marketplace is now production-ready with:
+
 - ✅ Real Stripe payments
 - ✅ Database-driven products
 - ✅ Email notifications

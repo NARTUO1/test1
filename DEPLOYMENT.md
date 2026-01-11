@@ -62,6 +62,7 @@ npm run build
 ```
 
 This creates:
+
 - `dist/spa/` - Frontend (React)
 - `dist/server/` - Backend (Express)
 
@@ -70,11 +71,13 @@ This creates:
 ### Using Netlify with Functions
 
 1. **Install Netlify CLI:**
+
    ```bash
    npm install -g netlify-cli
    ```
 
 2. **Create `netlify.toml`** (already included):
+
    ```toml
    [build]
    command = "npm run build"
@@ -93,18 +96,22 @@ This creates:
    ```
 
 3. **Create `netlify/functions/api.ts`** (already included):
+
    - This wraps your Express server for Netlify Functions
 
 4. **Deploy:**
+
    ```bash
    netlify deploy --prod
    ```
 
 5. **Set Environment Variables:**
+
    - Go to Netlify Dashboard > Site > Settings > Build & Deploy > Environment
    - Add all variables from `.env.production`
 
 6. **Configure Database:**
+
    - Since Netlify Functions are stateless, you'll need to use a persistent database
    - Options:
      - SQLite with persistent storage (PlanetScale, Railway, etc.)
@@ -112,12 +119,14 @@ This creates:
      - MongoDB Atlas
 
    **Option A: Using Neon PostgreSQL** (Recommended)
+
    - Create account at https://neon.tech
    - Create database and get connection string
    - Update code to use PostgreSQL instead of SQLite
    - Add to environment variables
 
    **Option B: Using Railway (Simpler)**
+
    - Create account at https://railway.app
    - Connect your GitHub repo
    - Set environment variables in Railway dashboard
@@ -128,11 +137,13 @@ This creates:
 ### Using Vercel
 
 1. **Install Vercel CLI:**
+
    ```bash
    npm install -g vercel
    ```
 
 2. **Create `vercel.json`** (if not exists):
+
    ```json
    {
      "buildCommand": "npm run build",
@@ -152,11 +163,13 @@ This creates:
    ```
 
 3. **Deploy:**
+
    ```bash
    vercel --prod
    ```
 
 4. **Set Environment Variables:**
+
    - In Vercel Dashboard > Settings > Environment Variables
    - Add all variables from `.env.production`
 
@@ -217,9 +230,10 @@ For production, migrate from SQLite to a managed database:
    npm install @sentry/node @sentry/tracing
    ```
 4. Add to server/index.ts:
+
    ```typescript
    import * as Sentry from "@sentry/node";
-   
+
    Sentry.init({
      dsn: process.env.SENTRY_DSN,
      environment: process.env.NODE_ENV,
@@ -237,6 +251,7 @@ For production, migrate from SQLite to a managed database:
 ## Post-Deployment
 
 1. Test all critical flows:
+
    - User registration
    - Product browsing
    - Cart & checkout
@@ -283,6 +298,7 @@ Serverless functions (Netlify, Vercel) may have slow initial responses. To impro
 ## Support
 
 For issues or questions:
+
 - Check deployment provider docs
 - Review error logs in dashboard
 - Consult Stripe documentation for payments
