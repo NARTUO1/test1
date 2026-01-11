@@ -69,6 +69,7 @@ export const confirmPayment: RequestHandler = async (req, res) => {
       });
     }
 
+    const stripe = getStripeInstance();
     const paymentIntent = await stripe.paymentIntents.retrieve(
       paymentIntentId
     );
