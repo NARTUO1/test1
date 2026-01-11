@@ -3,7 +3,6 @@ import { open, Database } from "sqlite";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
-import { JSONStore } from "./jsonStore";
 
 // Enable verbose mode for debugging
 const sqlite = sqlite3.verbose();
@@ -37,9 +36,8 @@ export async function initializeDatabase(): Promise<Database> {
     const schema = fs.readFileSync(schemaPath, "utf8");
     await db.exec(schema);
 
-    // Seed admin user into JSON store (users are now stored as JSON)
-    const jsonStore = JSONStore.getInstance();
-    await jsonStore.initAdminIfMissing();
+    // Initialize admin user in SQLite (if not exists)
+    await initializeAdminUser(db);
 
     console.log("✅ Database initialized successfully");
     console.log("📋 Default admin credentials (if newly created):");
@@ -51,6 +49,27 @@ export async function initializeDatabase(): Promise<Database> {
   } catch (error) {
     console.error("❌ Database initialization failed:", error);
     throw error;
+  }
+}
+
+async function initializeAdminUser(database: Database) {
+  try {
+    const existingAdmin = await database.get(
+      "SELECT id FROM users WHERE email = ?",
+      ["admin@marketplace.com"]
+    );
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      await database.run(
+        `INSERT INTO users (username, email, password_hash, full_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        ["admin", "admin@marketplace.com", hashedPassword, "System Administrator", "admin", 1]
+      );
+      console.log("✅ Admin user created");
+    }
+  } catch (error) {
+    console.error("Failed to initialize admin user:", error);
   }
 }
 
