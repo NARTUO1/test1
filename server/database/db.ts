@@ -91,7 +91,6 @@ export async function closeDatabase(): Promise<void> {
 export class DatabaseService {
   private static instance: DatabaseService;
   private db: Database | null = null;
-  private jsonStore = JSONStore.getInstance();
 
   static getInstance(): DatabaseService {
     if (!DatabaseService.instance) {
@@ -107,7 +106,7 @@ export class DatabaseService {
     return this.db;
   }
 
-  // User operations (migrated to JSON store)
+  // User operations (SQLite)
   async createUser(userData: {
     username: string;
     email: string;
@@ -117,25 +116,48 @@ export class DatabaseService {
     address?: string;
     role?: "customer" | "vendor" | "admin";
   }) {
-    return await this.jsonStore.createUser(userData as any);
+    const db = await this.getDb();
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const result = await db.run(
+      `INSERT INTO users (username, email, password_hash, full_name, phone, address, role, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
+      [
+        userData.username,
+        userData.email,
+        hashedPassword,
+        userData.fullName || null,
+        userData.phone || null,
+        userData.address || null,
+        userData.role || "customer"
+      ]
+    );
+    return result.lastID;
   }
 
   async getUserByEmail(email: string) {
-    return await this.jsonStore.getUserByEmail(email);
+    const db = await this.getDb();
+    return await db.get(
+      "SELECT * FROM users WHERE email = ? AND is_active = 1",
+      [email]
+    );
   }
 
   async getUserById(id: number) {
-    return await this.jsonStore.getUserById(id);
+    const db = await this.getDb();
+    return await db.get(
+      "SELECT * FROM users WHERE id = ? AND is_active = 1",
+      [id]
+    );
   }
 
   async verifyPassword(
     password: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    return await this.jsonStore.verifyPassword(password, hashedPassword);
+    return await bcrypt.compare(password, hashedPassword);
   }
 
-  // Vendor operations (migrated to JSON store)
+  // Vendor operations (SQLite)
   async createVendor(vendorData: {
     userId: number;
     businessName: string;
@@ -144,35 +166,42 @@ export class DatabaseService {
     taxId?: string;
     bankAccount?: string;
   }) {
-    // Create vendor in JSON store (authoritative vendor data)
-    const vendorId = await this.jsonStore.createVendor(vendorData as any);
-
-    // Also ensure a corresponding row exists in the SQLite vendors table so JOINs continue to work
     const db = await this.getDb();
-    try {
-      await db.run(
-        `INSERT OR REPLACE INTO vendors (id, user_id, business_name, business_description, business_address, tax_id, bank_account, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        [
-          vendorId,
-          vendorData.userId,
-          vendorData.businessName,
-          vendorData.businessDescription || null,
-          vendorData.businessAddress || null,
-          vendorData.taxId || null,
-          vendorData.bankAccount || null,
-        ],
-      );
-    } catch (e) {
-      // If sqlite insert fails, log but do not break (JSON store is authoritative)
-      console.error('Failed to insert vendor into sqlite vendors table:', e);
-    }
-
-    return vendorId;
+    const result = await db.run(
+      `INSERT INTO vendors (user_id, business_name, business_description, business_address, tax_id, bank_account, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+      [
+        vendorData.userId,
+        vendorData.businessName,
+        vendorData.businessDescription || null,
+        vendorData.businessAddress || null,
+        vendorData.taxId || null,
+        vendorData.bankAccount || null,
+      ]
+    );
+    return result.lastID;
   }
 
   async getVendorByUserId(userId: number) {
-    return await this.jsonStore.getVendorByUserId(userId);
+    const db = await this.getDb();
+    return await db.get(
+      `SELECT v.*, u.username, u.email, u.full_name
+       FROM vendors v
+       JOIN users u ON v.user_id = u.id
+       WHERE v.user_id = ?`,
+      [userId]
+    );
+  }
+
+  async getVendorById(vendorId: number) {
+    const db = await this.getDb();
+    return await db.get(
+      `SELECT v.*, u.username, u.email, u.full_name
+       FROM vendors v
+       JOIN users u ON v.user_id = u.id
+       WHERE v.id = ?`,
+      [vendorId]
+    );
   }
 
   // Product operations (remain in SQLite)
