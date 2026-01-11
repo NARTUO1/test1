@@ -101,6 +101,12 @@ export const createOrder: RequestHandler = async (req, res) => {
       items: orderItems,
     });
 
+    // Send order confirmation email
+    const customerEmail = guestInfo?.email || (userId ? (await dbService.getUserById(userId))?.email : undefined);
+    if (customerEmail) {
+      await sendOrderConfirmation(customerEmail, orderNumber, items, totalAmount);
+    }
+
     res.status(201).json({
       success: true,
       message: "Order created successfully",
