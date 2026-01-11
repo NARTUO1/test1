@@ -193,6 +193,13 @@ export function createServer() {
   );
 
   // ========================================
+  // PAYMENT ROUTES (Stripe)
+  // ========================================
+  app.get("/api/payments/config", getPublishableKey);
+  app.post("/api/payments/intent", createPaymentIntent);
+  app.post("/api/payments/confirm", confirmPayment);
+
+  // ========================================
   // CHATBOT ROUTES
   // ========================================
   app.post("/api/chat/start", startChatSession); // No auth required for guests
