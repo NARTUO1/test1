@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { handleDemo } from "./routes/demo";
 import { initializeDatabase } from "./database/db";
 
