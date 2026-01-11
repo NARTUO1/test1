@@ -31,6 +31,7 @@ export const createPaymentIntent: RequestHandler = async (req, res) => {
       });
     }
 
+    const stripe = getStripeInstance();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100), // Convert to cents
       currency,
