@@ -35,7 +35,7 @@ import {
   calculateVendorTotal,
 } from "../contexts/OrderContext";
 import { formatPrice } from "../lib/currency";
-import { FakePaymentModal } from "../components/FakePaymentModal";
+import { StripePaymentModal } from "../components/StripePaymentModal";
 
 export default function Checkout() {
   const { state, clearCart } = useCart();
