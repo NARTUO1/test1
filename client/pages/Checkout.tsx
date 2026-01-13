@@ -35,7 +35,7 @@ import {
   calculateVendorTotal,
 } from "../contexts/OrderContext";
 import { formatPrice } from "../lib/currency";
-import { FakePaymentModal } from "../components/FakePaymentModal";
+import { StripePaymentModal } from "../components/StripePaymentModal";
 
 export default function Checkout() {
   const { state, clearCart } = useCart();
@@ -731,10 +731,16 @@ export default function Checkout() {
       </div>
 
       {/* Payment Modal */}
-      <FakePaymentModal
+      <StripePaymentModal
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
-        onPayment={handlePaymentResult}
+        onPayment={(result) =>
+          handlePaymentResult({
+            success: result.success,
+            paymentId: result.paymentIntentId,
+            message: result.success ? "Payment successful" : "Payment failed",
+          })
+        }
         totalAmount={total}
         vendorName="MarketHub"
         orderItems={state.items.map((item) => ({
@@ -743,6 +749,7 @@ export default function Checkout() {
           price: item.price,
           quantity: item.quantity,
         }))}
+        customerEmail={shippingInfo.email}
       />
     </div>
   );

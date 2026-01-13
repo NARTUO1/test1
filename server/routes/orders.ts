@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { DatabaseService } from "../database/db";
+import { sendOrderConfirmation } from "../services/email";
 
 const dbService = DatabaseService.getInstance();
 
@@ -99,6 +100,19 @@ export const createOrder: RequestHandler = async (req, res) => {
       notes,
       items: orderItems,
     });
+
+    // Send order confirmation email
+    const customerEmail =
+      guestInfo?.email ||
+      (userId ? (await dbService.getUserById(userId))?.email : undefined);
+    if (customerEmail) {
+      await sendOrderConfirmation(
+        customerEmail,
+        orderNumber,
+        items,
+        totalAmount,
+      );
+    }
 
     res.status(201).json({
       success: true,

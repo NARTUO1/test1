@@ -81,6 +81,18 @@ export function MarketplaceHeader() {
           >
             Sell on MarketHub
           </Link>
+          <Link
+            to="/services"
+            className="text-sm font-medium hover:text-primary transition-colors"
+          >
+            Services
+          </Link>
+          <Link
+            to="/contact"
+            className="text-sm font-medium hover:text-primary transition-colors"
+          >
+            Contact
+          </Link>
         </nav>
 
         {/* User Actions */}
@@ -234,6 +246,18 @@ export function MarketplaceHeader() {
                 className="text-sm font-medium hover:text-primary transition-colors py-2"
               >
                 Sell on MarketHub
+              </Link>
+              <Link
+                to="/services"
+                className="text-sm font-medium hover:text-primary transition-colors py-2"
+              >
+                Services
+              </Link>
+              <Link
+                to="/contact"
+                className="text-sm font-medium hover:text-primary transition-colors py-2"
+              >
+                Contact
               </Link>
               <div className="border-t pt-3 mt-3">
                 <Link

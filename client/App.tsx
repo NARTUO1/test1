@@ -15,6 +15,8 @@ import Chatbot from "./components/Chatbot";
 import ConditionalFooter from "./components/ConditionalFooter";
 import VendorProductForm from "./pages/VendorProductForm";
 import VendorProfile from "./pages/VendorProfile";
+import VendorAnalytics from "./pages/VendorAnalytics";
+import Support from "./pages/Support";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -27,6 +29,10 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VendorDashboard from "./pages/VendorDashboard";
 import VendorProducts from "./pages/VendorProducts";
 import VendorInventory from "./pages/VendorInventory";
+import VendorOrders from "./pages/VendorOrders";
+import VendorReviews from "./pages/VendorReviews";
+import VendorCustomers from "./pages/VendorCustomers";
+import VendorSettings from "./pages/VendorSettings";
 import OrderTracking from "./pages/OrderTracking";
 import Wishlist from "./pages/Wishlist";
 import OrderHistory from "./pages/OrderHistory";
@@ -46,6 +52,10 @@ import BecomeSeller from "./components/BecomeSeller";
 import SellerLogin from "./components/SellerLogin";
 import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
+import Services from "./pages/Services";
+import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +97,19 @@ const App = () => (
                         path="/vendor/inventory"
                         element={<VendorInventory />}
                       />
+                      <Route path="/vendor/orders" element={<VendorOrders />} />
+                      <Route
+                        path="/vendor/reviews"
+                        element={<VendorReviews />}
+                      />
+                      <Route
+                        path="/vendor/customers"
+                        element={<VendorCustomers />}
+                      />
+                      <Route
+                        path="/vendor/settings"
+                        element={<VendorSettings />}
+                      />
                       <Route path="/orders" element={<OrderTracking />} />
                       <Route path="/track-order" element={<OrderTracking />} />
                       <Route path="/wishlist" element={<Wishlist />} />
@@ -114,6 +137,10 @@ const App = () => (
                       />
                       <Route path="/categories" element={<Categories />} />
                       <Route path="/vendors" element={<Vendors />} />
+                      <Route path="/services" element={<Services />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
                       <Route
                         path="/vendor/products/new"
                         element={<VendorProductForm />}
@@ -126,6 +153,7 @@ const App = () => (
                         path="/vendor/profile"
                         element={<VendorProfile />}
                       />
+                      <Route path="/vendor/analytics" element={<VendorAnalytics />} />
                       <Route
                         path="/deals"
                         element={
@@ -140,6 +168,8 @@ const App = () => (
                       />
                       <Route path="/become-seller" element={<BecomeSeller />} />
                       <Route path="/seller-login" element={<SellerLogin />} />
+                      <Route path="/support" element={<Support />} />
+                      <Route path="/order-tracking" element={<OrderTracking />} />
                       <Route
                         path="/payment-success"
                         element={<PaymentSuccess />}

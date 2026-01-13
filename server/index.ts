@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { handleDemo } from "./routes/demo";
 import { initializeDatabase } from "./database/db";
 
@@ -65,16 +67,59 @@ import {
   exportData,
 } from "./routes/admin";
 
+import {
+  createPaymentIntent,
+  confirmPayment,
+  handleWebhook,
+  getPublishableKey,
+} from "./routes/payments";
+
 export function createServer() {
   const app = express();
 
   // Initialize database on server start
   initializeDatabase().catch(console.error);
 
+  // Security Middleware
+  app.use(helmet());
+
+  // Rate limiting
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again later.",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // limit each IP to 5 login attempts per windowMs
+    message: "Too many login attempts, please try again later.",
+    skip: (req) => req.method !== "POST",
+    skipSuccessfulRequests: true,
+  });
+
+  app.use("/api/", limiter);
+  app.use("/api/auth/login", authLimiter);
+  app.use("/api/auth/register", authLimiter);
+
   // Middleware
   app.use(cors());
+
+  // Stripe webhook needs raw body, so handle it before JSON parsing
+  app.post(
+    "/api/webhooks/stripe",
+    express.raw({ type: "application/json" }),
+    handleWebhook,
+  );
+
   app.use(express.json({ limit: "10mb" }));
   app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+  // Serve uploaded files
+  const uploadDir = process.env.UPLOAD_DIR || "./uploads";
+  app.use("/uploads", express.static(uploadDir));
 
   // Health check
   app.get("/api/ping", (_req, res) => {
@@ -180,6 +225,13 @@ export function createServer() {
     requireVendorOrAdmin,
     updateOrderStatus,
   );
+
+  // ========================================
+  // PAYMENT ROUTES (Stripe)
+  // ========================================
+  app.get("/api/payments/config", getPublishableKey);
+  app.post("/api/payments/intent", createPaymentIntent);
+  app.post("/api/payments/confirm", confirmPayment);
 
   // ========================================
   // CHATBOT ROUTES

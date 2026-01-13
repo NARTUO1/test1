@@ -1,10 +1,11 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { DatabaseService } from "../database/db";
+import { sendWelcomeEmail } from "../services/email";
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "your-super-secret-jwt-key-change-in-production";
-const JWT_EXPIRES_IN = "7d";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 const dbService = DatabaseService.getInstance();
 
@@ -48,6 +49,9 @@ export const registerUser: RequestHandler = async (req, res) => {
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN },
     );
+
+    // Send welcome email
+    await sendWelcomeEmail(email, fullName || username);
 
     res.status(201).json({
       success: true,

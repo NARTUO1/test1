@@ -3,6 +3,7 @@ import { open, Database } from "sqlite";
 import fs from "fs";
 import path from "path";
 import bcrypt from "bcryptjs";
+import { seedDatabase } from "./seed";
 
 // Enable verbose mode for debugging
 const sqlite = sqlite3.verbose();
@@ -36,20 +37,14 @@ export async function initializeDatabase(): Promise<Database> {
     const schema = fs.readFileSync(schemaPath, "utf8");
     await db.exec(schema);
 
-    // Create default admin user with proper password hash
-    const adminPassword = "admin123"; // Default admin password
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    // Initialize admin user in SQLite (if not exists)
+    await initializeAdminUser(db);
 
-    await db.run(
-      `
-      INSERT OR REPLACE INTO users (id, username, email, password_hash, full_name, role, is_active) 
-      VALUES (1, 'admin', 'admin@marketplace.com', ?, 'System Administrator', 'admin', 1)
-    `,
-      [hashedPassword],
-    );
+    // Seed database with initial data
+    await seedDatabase(db);
 
     console.log("✅ Database initialized successfully");
-    console.log("📋 Default admin credentials:");
+    console.log("📋 Default admin credentials (if newly created):");
     console.log("   Username: admin");
     console.log("   Password: admin123");
     console.log("   Email: admin@marketplace.com");
@@ -58,6 +53,34 @@ export async function initializeDatabase(): Promise<Database> {
   } catch (error) {
     console.error("❌ Database initialization failed:", error);
     throw error;
+  }
+}
+
+async function initializeAdminUser(database: Database) {
+  try {
+    const existingAdmin = await database.get(
+      "SELECT id FROM users WHERE email = ?",
+      ["admin@marketplace.com"],
+    );
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      await database.run(
+        `INSERT INTO users (username, email, password_hash, full_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          "admin",
+          "admin@marketplace.com",
+          hashedPassword,
+          "System Administrator",
+          "admin",
+          1,
+        ],
+      );
+      console.log("✅ Admin user created");
+    }
+  } catch (error) {
+    console.error("Failed to initialize admin user:", error);
   }
 }
 
@@ -94,7 +117,7 @@ export class DatabaseService {
     return this.db;
   }
 
-  // User operations
+  // User operations (SQLite)
   async createUser(userData: {
     username: string;
     email: string;
@@ -106,12 +129,9 @@ export class DatabaseService {
   }) {
     const db = await this.getDb();
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-
     const result = await db.run(
-      `
-      INSERT INTO users (username, email, password_hash, full_name, phone, address, role)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
+      `INSERT INTO users (username, email, password_hash, full_name, phone, address, role, is_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
       [
         userData.username,
         userData.email,
@@ -122,7 +142,6 @@ export class DatabaseService {
         userData.role || "customer",
       ],
     );
-
     return result.lastID;
   }
 
@@ -148,7 +167,7 @@ export class DatabaseService {
     return await bcrypt.compare(password, hashedPassword);
   }
 
-  // Vendor operations
+  // Vendor operations (SQLite)
   async createVendor(vendorData: {
     userId: number;
     businessName: string;
@@ -159,10 +178,8 @@ export class DatabaseService {
   }) {
     const db = await this.getDb();
     const result = await db.run(
-      `
-      INSERT INTO vendors (user_id, business_name, business_description, business_address, tax_id, bank_account)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `,
+      `INSERT INTO vendors (user_id, business_name, business_description, business_address, tax_id, bank_account, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
       [
         vendorData.userId,
         vendorData.businessName,
@@ -172,24 +189,32 @@ export class DatabaseService {
         vendorData.bankAccount || null,
       ],
     );
-
     return result.lastID;
   }
 
   async getVendorByUserId(userId: number) {
     const db = await this.getDb();
     return await db.get(
-      `
-      SELECT v.*, u.username, u.email, u.full_name 
-      FROM vendors v 
-      JOIN users u ON v.user_id = u.id 
-      WHERE v.user_id = ?
-    `,
+      `SELECT v.*, u.username, u.email, u.full_name
+       FROM vendors v
+       JOIN users u ON v.user_id = u.id
+       WHERE v.user_id = ?`,
       [userId],
     );
   }
 
-  // Product operations
+  async getVendorById(vendorId: number) {
+    const db = await this.getDb();
+    return await db.get(
+      `SELECT v.*, u.username, u.email, u.full_name
+       FROM vendors v
+       JOIN users u ON v.user_id = u.id
+       WHERE v.id = ?`,
+      [vendorId],
+    );
+  }
+
+  // Product operations (remain in SQLite)
   async createProduct(productData: {
     vendorId: number;
     categoryId: number;
